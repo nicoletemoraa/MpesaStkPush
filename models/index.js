@@ -3,7 +3,6 @@ const dbConfig = require("../config/dbConfig.js");
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
-  port:dbConfig.port,
   dialect: dbConfig.dialect,
   operatorsAliases: 0,
 
@@ -14,15 +13,6 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     idle: dbConfig.pool.idle
   }
 });
-sequelize
-  .authenticate()
-  .then(function(err) {
-    console.log('Connection has been established successfully.');
-  })
-  .catch(function (err) {
-    console.log('Unable to connect to the container database:', err);
-  });
-
 
 const db = {};
 
