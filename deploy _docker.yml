@@ -1,0 +1,48 @@
+- hosts:dev
+  vars:
+    docker_volume: db
+    docker_network: ansible_net
+    db_name: mysqldb
+  tasks:
+      - name: "Launch database container"
+        docker_container:
+          name: "{{ db_name }}"
+          image: mysql:5.7
+        volumes:
+          - "{{ docker_volume }}:/var/lib/mysql:rw"
+        restart: unless-stopped
+        networks:
+        - name: "{{ docker_network }}"
+        alias:
+        - "{{ db_name }}"
+        env_file: ./.env
+        env:
+          MYSQL_ROOT_PASSWORD: "{{MYSQLDB_ROOT_PASSWORD}}"
+          MYSQL_DATABASE: mpesa
+      - name: "Launch app container"
+        depends_on:
+          - mysqldb
+        docker_container:
+          name: "{{ db_name }}"
+          image: mysql:5.7
+        volumes:
+          - "{{ docker_volume }}:/var/lib/mysql:rw"
+        restart: unless-stopped
+        networks:
+          - name: "{{ docker_network }}"
+        env_file: ./.env
+        ports:
+          - "{{NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}}"  
+        env:
+          DB_HOST=mysqldb
+          DB_USER="{{MYSQLDB_USER}}"
+          DB_PASSWORD="{{MYSQLDB_ROOT_PASSWORD}}"
+          DB_NAME="{{MYSQLDB_DATABASE}}"
+          DB_PORT="{{MYSQLDB_DOCKER_PORT}}"
+        stdin_open: true
+        tty: true
+        volumes:
+        "{{ docker_volume }}" 
+
+
+
