@@ -7,7 +7,7 @@
       - name: "Launch database container"
         docker_container:
           name: "{{ db_name }}"
-          image: mysql:5.7
+          image: "nicolete/stkdocker:{{DOCKER_TAG}}
         volumes:
           - "{{ docker_volume }}:/var/lib/mysql:rw"
         restart: unless-stopped
@@ -22,9 +22,7 @@
       - name: "Launch app container"
         depends_on:
           - mysqldb
-        docker_container:
-          name: "{{ db_name }}"
-          image: mysql:5.7
+        build: ./
         volumes:
           - "{{ docker_volume }}:/var/lib/mysql:rw"
         restart: unless-stopped
@@ -41,8 +39,8 @@
           DB_PORT="{{MYSQLDB_DOCKER_PORT}}"
         stdin_open: true
         tty: true
-        volumes:
-        "{{ docker_volume }}" 
+    volumes:
+      "{{ docker_volume }}" 
 
 
 
